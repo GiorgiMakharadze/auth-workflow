@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { authenticateUser } from "../middleware/authentication";
 import {
   register,
   login,
@@ -10,7 +11,7 @@ const router = Router();
 
 router.route("/register").post(register);
 router.route("/login").post(login);
-router.route("/logout").get(logout);
+router.route("/logout").delete(authenticateUser, logout);
 router.route("/verify-email").post(verifyEmail);
 
 export default router;

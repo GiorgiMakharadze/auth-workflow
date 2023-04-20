@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { RequestWithUser } from "../../types/authMiddlewareTypes";
 import { StatusCodes } from "http-status-codes";
 import crypto from "crypto";
 import User from "../models/User";
@@ -40,7 +41,6 @@ export const register = async (req: Request, res: Response) => {
     origin,
   });
 
-  //send verification token back only while testing in postman
   res.status(StatusCodes.CREATED).json({
     msg: "Please check your email to verify account",
   });
@@ -118,8 +118,14 @@ export const login = async (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 
-export const logout = async (req: Request, res: Response) => {
-  res.cookie("token", "logout", {
+export const logout = async (req: RequestWithUser, res: Response) => {
+  await Token.findOneAndDelete({ user: req.user?.userId });
+
+  res.cookie("accessToken", "logout", {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  });
+  res.cookie("refreshToken", "logout", {
     httpOnly: true,
     expires: new Date(Date.now()),
   });

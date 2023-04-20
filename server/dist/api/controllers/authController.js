@@ -43,7 +43,6 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         verificationToken: user.verificationToken,
         origin,
     });
-    //send verification token back only while testing in postman
     res.status(http_status_codes_1.StatusCodes.CREATED).json({
         msg: "Please check your email to verify account",
     });
@@ -106,7 +105,13 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.login = login;
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.cookie("token", "logout", {
+    var _a;
+    yield Token_1.default.findOneAndDelete({ user: (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId });
+    res.cookie("accessToken", "logout", {
+        httpOnly: true,
+        expires: new Date(Date.now()),
+    });
+    res.cookie("refreshToken", "logout", {
         httpOnly: true,
         expires: new Date(Date.now()),
     });
