@@ -1,5 +1,5 @@
 import { Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export const createJWT = ({
   payload,
@@ -11,8 +11,8 @@ export const createJWT = ({
   return token;
 };
 
-export const isTokenValid = ({ token }: { token: string }) =>
-  jwt.verify(token, process.env.JWT_SECRET!);
+export const isTokenValid = (token: string) =>
+  jwt.verify(token, process.env.JWT_SECRET!) as { [key: string]: any };
 
 export const attachCookiesToResponse = ({
   res,
@@ -36,7 +36,7 @@ export const attachCookiesToResponse = ({
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     signed: true,
-    maxAge: 1000,
+    maxAge: 1000 * 60 * 15,
   });
   res.cookie("refreshToken", refreshTokenJWT, {
     httpOnly: true,

@@ -8,18 +8,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorizePremmisions = exports.authenticateUser = void 0;
 const utils_1 = require("../../utils");
 const errors_1 = require("../errors");
+const Token_1 = __importDefault(require("../models/Token"));
 const authenticateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.signedCookies.token;
-    if (!token) {
-        throw new errors_1.UnauthenticatedError("Authentication Invalid");
-    }
+    const { refreshToken, accessToken } = req.signedCookies;
     try {
-        const { name, userId, role } = (0, utils_1.isTokenValid)({ token });
-        req.user = { name, userId, role };
+        if (accessToken) {
+            const payload = (0, utils_1.isTokenValid)(accessToken);
+            req.user = payload.user;
+            return next();
+        }
+        const payload = (0, utils_1.isTokenValid)(refreshToken);
+        const existingToken = yield Token_1.default.findOne({
+            user: payload.user.userId,
+            refreshToken: payload.refreshToken,
+        });
+        if (!existingToken || !(existingToken === null || existingToken === void 0 ? void 0 : existingToken.isValid)) {
+            throw new errors_1.UnauthenticatedError("Authentication Invalid");
+        }
+        (0, utils_1.attachCookiesToResponse)({
+            res,
+            user: payload.user,
+            refreshToken: existingToken.refreshToken,
+        });
+        req.user = payload.user;
         next();
     }
     catch (error) {
@@ -37,13 +55,3 @@ const authorizePremmisions = (...roles) => {
     };
 };
 exports.authorizePremmisions = authorizePremmisions;
-// export const authorizePremmisions = (
-//   req: RequestWithUser,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   if (req.user?.role !== "admin") {
-//     throw new UnauthorizedError("Unauthorized to access this route");
-//   }
-//   next();
-// };

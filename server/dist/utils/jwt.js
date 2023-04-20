@@ -10,7 +10,7 @@ const createJWT = ({ payload, }) => {
     return token;
 };
 exports.createJWT = createJWT;
-const isTokenValid = ({ token }) => jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+const isTokenValid = (token) => jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
 exports.isTokenValid = isTokenValid;
 const attachCookiesToResponse = ({ res, user, refreshToken, }) => {
     const accessTokenJWT = (0, exports.createJWT)({ payload: { user } });
@@ -20,7 +20,7 @@ const attachCookiesToResponse = ({ res, user, refreshToken, }) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         signed: true,
-        maxAge: 1000,
+        maxAge: 1000 * 60 * 15,
     });
     res.cookie("refreshToken", refreshTokenJWT, {
         httpOnly: true,
