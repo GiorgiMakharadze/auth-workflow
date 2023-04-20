@@ -12,9 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendResetPasswordEmail = void 0;
 const sendEmail_1 = require("./sendEmail");
 const sendResetPasswordEmail = ({ name, email, token, origin, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const resetUrl = `${origin}/user/reset-password?token=${token}&email=${email}`;
-    const message = `<p>Please reset password by clicking on the following link: 
-  <a href="${resetUrl}">Reset Password</a></p>`;
+    const resetURL = `${origin}/user/reset-password?token=${token}&email=${email}`;
+    const message = `<p>Please reset password by clicking on the following link : 
+  <a href="${resetURL}">Reset Password</a></p>`;
     return (0, sendEmail_1.sendEmail)({
         to: email,
         subject: "Reset Password",

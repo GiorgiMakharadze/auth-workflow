@@ -135,7 +135,7 @@ const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
         const tenMinutes = 1000 * 60 * 10;
         const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
-        user.passwordToken = passwordToken;
+        user.passwordToken = (0, utils_1.hashString)(passwordToken);
         user.passwordTokenExpirationDate = passwordTokenExpirationDate;
         yield user.save();
     }
@@ -145,6 +145,21 @@ const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.forgotPassword = forgotPassword;
 const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token, email, password } = req.body;
+    if (!token || !email || !password) {
+        throw new errors_1.BadRequestError("Please provide all values");
+    }
+    const user = yield User_1.default.findOne({ email });
+    if (user) {
+        const currentDate = new Date();
+        if (user.passwordToken === (0, utils_1.hashString)(token) &&
+            user.passwordTokenExpirationDate > currentDate) {
+            user.password = password;
+            user.passwordToken = null;
+            user.passwordTokenExpirationDate = null;
+            yield user.save();
+        }
+    }
     res.send("reset password");
 });
 exports.resetPassword = resetPassword;

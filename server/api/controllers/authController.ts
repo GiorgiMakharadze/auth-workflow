@@ -9,6 +9,7 @@ import {
   createTokenUser,
   sendVerificationEmail,
   sendResetPasswordEmail,
+  hashString,
 } from "../../utils";
 import { UnauthenticatedError, BadRequestError } from "../errors";
 
@@ -154,7 +155,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     const tenMinutes = 1000 * 60 * 10;
     const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
-    user.passwordToken = passwordToken;
+    user.passwordToken = hashString(passwordToken);
     user.passwordTokenExpirationDate = passwordTokenExpirationDate;
     await user.save();
   }
@@ -165,5 +166,25 @@ export const forgotPassword = async (req: Request, res: Response) => {
 };
 
 export const resetPassword = async (req: Request, res: Response) => {
+  const { token, email, password } = req.body;
+  if (!token || !email || !password) {
+    throw new BadRequestError("Please provide all values");
+  }
+  const user = await User.findOne({ email });
+
+  if (user) {
+    const currentDate = new Date();
+
+    if (
+      user.passwordToken === hashString(token) &&
+      user.passwordTokenExpirationDate > currentDate
+    ) {
+      user.password = password;
+      user.passwordToken = null;
+      user.passwordTokenExpirationDate = null;
+
+      await user.save();
+    }
+  }
   res.send("reset password");
 };

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendResetPasswordEmail = exports.sendVerificationEmail = exports.checkPremissions = exports.createTokenUser = exports.attachCookiesToResponse = exports.isTokenValid = exports.createJWT = void 0;
+exports.hashString = exports.sendResetPasswordEmail = exports.sendVerificationEmail = exports.checkPremissions = exports.createTokenUser = exports.attachCookiesToResponse = exports.isTokenValid = exports.createJWT = void 0;
 const jwt_1 = require("./jwt");
 Object.defineProperty(exports, "createJWT", { enumerable: true, get: function () { return jwt_1.createJWT; } });
 Object.defineProperty(exports, "isTokenValid", { enumerable: true, get: function () { return jwt_1.isTokenValid; } });
@@ -13,3 +13,5 @@ const sendVerificationEmail_1 = require("./sendVerificationEmail");
 Object.defineProperty(exports, "sendVerificationEmail", { enumerable: true, get: function () { return sendVerificationEmail_1.sendVerificationEmail; } });
 const sendResetPasswordEmail_1 = require("./sendResetPasswordEmail");
 Object.defineProperty(exports, "sendResetPasswordEmail", { enumerable: true, get: function () { return sendResetPasswordEmail_1.sendResetPasswordEmail; } });
+const createHash_1 = require("./createHash");
+Object.defineProperty(exports, "hashString", { enumerable: true, get: function () { return createHash_1.hashString; } });
