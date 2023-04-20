@@ -1,38 +1,43 @@
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-import main from '../assets/main.svg';
-import { Redirect } from 'react-router-dom';
-import { useGlobalContext } from '../context';
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+import main from "../assets/main.svg";
+import { Redirect } from "react-router-dom";
+import { useGlobalContext } from "../context";
 function Home() {
   const { user } = useGlobalContext();
   return (
     <>
-      {user && <Redirect to='/dashboard' />}
-      <Wrapper className='page'>
-        <div className='info'>
+      {user && <Redirect to="/dashboard" />}
+      <Wrapper className="page">
+        <div className="info">
           <h2>
             <span>Auth</span>
             Workflow
           </h2>
           <p>
-            I'm baby viral enamel pin chartreuse cliche retro af selfies kinfolk
-            photo booth plaid jianbing actually squid 3 wolf moon lumbersexual.
-            Hell of humblebrag gluten-free lo-fi man braid leggings.
+            AuthWorkflow is a MERN stack application created by Giorgi
+            Makharadze for user authentication and password management. It uses
+            JWT authentication, bcrypt for password encryption, and nodemailer
+            for sending password reset emails. The app provides user
+            registration, login, logout, forgot password and reset password
+            functionalities
           </p>
           <p>
-            Cloud bread kale chips wayfarers deep v chicharrones leggings
-            fingerstache actually blog cliche four dollar toast. Sriracha ugh
-            kickstarter, next level la croix butcher lomo.
+            It allows users to update their profiles and change their passwords
+            securely. The app is customizable to use different SMTP services for
+            sending emails. AuthWorkflow provides a reliable and secure way to
+            manage user authentication and password management for web
+            applications.
           </p>
 
-          <Link to='/login' className='btn'>
+          <Link to="/login" className="btn">
             Login
           </Link>
-          <Link to='/register' className='btn'>
+          <Link to="/register" className="btn">
             Register
           </Link>
         </div>
-        <img src={main} alt='job hunt' className='img main-img' />
+        <img src={main} alt="job hunt" className="img main-img" />
       </Wrapper>
     </>
   );
