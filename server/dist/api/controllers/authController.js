@@ -16,6 +16,7 @@ exports.logout = exports.login = exports.verifyEmail = exports.register = void 0
 const http_status_codes_1 = require("http-status-codes");
 const crypto_1 = __importDefault(require("crypto"));
 const User_1 = __importDefault(require("../models/User"));
+const Token_1 = __importDefault(require("../models/Token"));
 const utils_1 = require("../../utils");
 const errors_1 = require("../errors");
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -81,7 +82,26 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         throw new errors_1.UnauthenticatedError("Please verify your email");
     }
     const tokenUser = (0, utils_1.createTokenUser)(user);
-    (0, utils_1.attachCookiesToResponse)({ res, user: tokenUser });
+    //create refresh token
+    let refreshToken = "";
+    //check for existing token
+    const existingToken = yield Token_1.default.findOne({ user: user._id });
+    if (existingToken) {
+        const { isValid } = existingToken;
+        if (!isValid) {
+            throw new errors_1.UnauthenticatedError("Invalid Credentials");
+        }
+        refreshToken = existingToken.refreshToken;
+        (0, utils_1.attachCookiesToResponse)({ res, user: tokenUser, refreshToken });
+        res.status(http_status_codes_1.StatusCodes.OK).json({ user: tokenUser });
+        return;
+    }
+    refreshToken = crypto_1.default.randomBytes(40).toString("hex");
+    const userAgent = req.headers["user-agent"];
+    const ip = req.ip;
+    const userToken = { refreshToken, ip, userAgent, user: user._id };
+    yield Token_1.default.create(userToken);
+    (0, utils_1.attachCookiesToResponse)({ res, user: tokenUser, refreshToken });
     res.status(http_status_codes_1.StatusCodes.OK).json({ user: tokenUser });
 });
 exports.login = login;

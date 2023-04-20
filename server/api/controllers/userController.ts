@@ -48,6 +48,7 @@ export const updateUser = async (req: RequestWithUser, res: Response) => {
     throw new NotFoundError("User not found");
   }
   const tokenUser = createTokenUser(user);
+
   attachCookiesToResponse({ res, user: tokenUser });
 
   res.status(StatusCodes.OK).json({ user: tokenUser });

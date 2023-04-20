@@ -2,13 +2,13 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import crypto from "crypto";
 import User from "../models/User";
+import Token from "../models/Token";
 import {
   attachCookiesToResponse,
   createTokenUser,
   sendVerificationEmail,
 } from "../../utils";
 import { UnauthenticatedError, BadRequestError } from "../errors";
-import { sendEmail } from "../../utils/sendEmail";
 
 export const register = async (req: Request, res: Response) => {
   const { email, name, password } = req.body;
@@ -89,7 +89,31 @@ export const login = async (req: Request, res: Response) => {
   }
 
   const tokenUser = createTokenUser(user);
-  attachCookiesToResponse({ res, user: tokenUser });
+  //create refresh token
+  let refreshToken = "";
+  //check for existing token
+  const existingToken = await Token.findOne({ user: user._id });
+  if (existingToken) {
+    const { isValid } = existingToken;
+    if (!isValid) {
+      throw new UnauthenticatedError("Invalid Credentials");
+    }
+    refreshToken = existingToken.refreshToken;
+
+    attachCookiesToResponse({ res, user: tokenUser, refreshToken });
+
+    res.status(StatusCodes.OK).json({ user: tokenUser });
+    return;
+  }
+
+  refreshToken = crypto.randomBytes(40).toString("hex");
+  const userAgent = req.headers["user-agent"];
+  const ip = req.ip;
+  const userToken = { refreshToken, ip, userAgent, user: user._id };
+
+  await Token.create(userToken);
+
+  attachCookiesToResponse({ res, user: tokenUser, refreshToken });
 
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };

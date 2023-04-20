@@ -17,7 +17,6 @@ const TokenSchema = new Schema<ITokenSchema>(
     },
     isValid: {
       type: Boolean,
-      required: true,
       default: true,
     },
     user: {

@@ -51,7 +51,8 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         throw new errors_1.NotFoundError("User not found");
     }
     const tokenUser = (0, utils_1.createTokenUser)(user);
-    (0, utils_1.attachCookiesToResponse)({ res, user: tokenUser });
+    let refreshToken = "";
+    (0, utils_1.attachCookiesToResponse)({ res, user: tokenUser, refreshToken });
     res.status(http_status_codes_1.StatusCodes.OK).json({ user: tokenUser });
 });
 exports.updateUser = updateUser;
