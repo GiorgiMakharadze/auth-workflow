@@ -1,5 +1,5 @@
 {
-  "name": "e-comerce-api",
+  "name": "auth-workflow-server",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",

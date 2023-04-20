@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.login = exports.verifyEmail = exports.register = void 0;
+exports.resetPassword = exports.forgotPassword = exports.logout = exports.login = exports.verifyEmail = exports.register = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const crypto_1 = __importDefault(require("crypto"));
 const User_1 = __importDefault(require("../models/User"));
@@ -118,3 +118,33 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "user logged out" });
 });
 exports.logout = logout;
+const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    if (!email) {
+        throw new errors_1.BadRequestError("Please provide valid emial");
+    }
+    const user = yield User_1.default.findOne({ email });
+    if (user) {
+        const passwordToken = crypto_1.default.randomBytes(40).toString("hex");
+        const origin = "http://localhost:3000";
+        yield (0, utils_1.sendResetPasswordEmail)({
+            name: user.name,
+            email: user.email,
+            token: passwordToken,
+            origin,
+        });
+        const tenMinutes = 1000 * 60 * 10;
+        const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
+        user.passwordToken = passwordToken;
+        user.passwordTokenExpirationDate = passwordTokenExpirationDate;
+        yield user.save();
+    }
+    res
+        .status(http_status_codes_1.StatusCodes.OK)
+        .json({ msg: "Please check your email for reset password link" });
+});
+exports.forgotPassword = forgotPassword;
+const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.send("reset password");
+});
+exports.resetPassword = resetPassword;

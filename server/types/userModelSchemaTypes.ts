@@ -14,4 +14,6 @@ export interface IUserSchema {
   verificationToken: string;
   isVerified: boolean;
   verified: Date;
+  passwordToken: string;
+  passwordTokenExpirationDate: Date;
 }
