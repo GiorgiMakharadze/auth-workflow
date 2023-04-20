@@ -23,4 +23,3 @@ const sendVerificationEmail = ({ name, email, verificationToken, origin, }) => _
     });
 });
 exports.sendVerificationEmail = sendVerificationEmail;
-console.log("front");

@@ -18,5 +18,3 @@ export const sendVerificationEmail = async ({
     `,
   });
 };
-
-console.log("front");
