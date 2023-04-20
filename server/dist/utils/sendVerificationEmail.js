@@ -12,7 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendVerificationEmail = void 0;
 const sendEmail_1 = require("./sendEmail");
 const sendVerificationEmail = ({ name, email, verificationToken, origin, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const message = "<p>Please confrim you email by clickin on the following link: </p>";
+    const verifyEmail = `${origin}/user/verify-email?token=${verificationToken}&email=${email}`;
+    const message = `<p>Please confrim you email by clickin on the following link: <a href="${verifyEmail}">Verify Email</a></p>`;
     return (0, sendEmail_1.sendEmail)({
         to: email,
         subject: "Email confrimation",
@@ -22,3 +23,4 @@ const sendVerificationEmail = ({ name, email, verificationToken, origin, }) => _
     });
 });
 exports.sendVerificationEmail = sendVerificationEmail;
+console.log("front");
